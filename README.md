@@ -28,13 +28,26 @@ myEntity.addEventListener('remove', logEntityEvents);
 myEntity.addEventListener('removed', logEntityEvents);
 
 myEntity.setAttribute('foo', 'bar');
+// change foo EntityEvent{/*...*/}
+// changed foo EntityEvent{/*...*/}
+
 myEntity.setAttribute('zaz', 'traz');
+// change zaz EntityEvent{/*...*/}
+// changed zaz EntityEvent{/*...*/}
+
 myEntity.removeAttribute('zaz');
+// remove zaz EntityEvent{/*...*/}
+// removed zaz EntityEvent{/*...*/}
+
 console.log(myEntity.getAttribute('foo'));
+// bar
 
 myEntity.setAttribute('abc', 'cde');
+// change abc EntityEvent{/*...*/}
+// changed abc EntityEvent{/*...*/}
 
 console.log(JSON.stringify(myEntity));
+//{"foo":"bar","abc":"cde"}
 ```
 
 Methods
@@ -68,13 +81,31 @@ Events are providen by [ObjectEventTarget](https://github.com/gartz/ObjectEventT
 * **changed**: When the attribute value has changed.
 * **removed**: When the attribute value has been removed.
 
+EntityEvent
+-----------
+
+This is injected as first argument of any EntityEvent, and has all the properties from *ObjectEvent* and some properties refered to the Entity.
+
+* **attribute**: The name of the attribute that is been manipulated.
+* **value**: Will return the value of an attribute change, also if you try to remove the attribute this will have the final value of the operation.
+* **oldValue**: The value of the attribute, before any applied change.
+
+Example to filter changes only in a specific attribute:
+
+```Javascript
+myEntity.addEventListener('changed', function (event){
+  if(event.attribute !== 'foo') return;
+  /* my code to be executed only if foo is changed */
+});
+```
+
 Prototype
 ---------
 
 To prototype you can call from your new constructor passing your context.
 
 Example:
-```
+```Javascript
 function FancyEntity( name ){
     Entity.call(this);
     this.name = name;
