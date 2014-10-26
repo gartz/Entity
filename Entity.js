@@ -198,12 +198,14 @@
   }
   root.Entity = Entity;
   root.EntityEvent = EntityEvent;
+  root.EntityAttributes = EntityAttributes;
 
   // Export as module to nodejs
   if (typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
     module.exports = {
       Entity: Entity,
-      EntityEvent: EntityEvent
+      EntityEvent: EntityEvent,
+      EntityAttributes: EntityAttributes
     };
   }
 })(this);
