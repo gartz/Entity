@@ -50,6 +50,11 @@ console.log(JSON.stringify(myEntity));
 //{"foo":"bar","abc":"cde"}
 ```
 
+Constructor
+-----------
+
+Accept a *object* to be parsed as attributes from the entity, and will try to load any prototype with `getPrototype` method, that allows to access the super constructor.
+
 Methods
 -------
 
@@ -58,6 +63,9 @@ Methods
 * **getAttribute( name )**: Return the attribute content
 * **setAttribute( name, value )**: Update the attribute value (if doesn't exist, it will be created)
 * **removeAttribute( name )**: Return true if the attribute was removed
+* **parse( object )**: Add all the properties in a object as attribute and remove the attributes in the model that isn't present in the object
+* **toJSON()**: Export the Entity to a object that can be stringfy by `JSON.stringfy` method.
+* **getPrototype()**: Will expose the prototype instance, to allow super constructors.
 
 Properties
 ----------
