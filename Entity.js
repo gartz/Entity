@@ -27,10 +27,16 @@
   }
   EntityAttributes.prototype = Object.prototype;
 
-  function Entity(){
+  function Entity(json){
 
     // Prototype constructor
-    if (!(Entity.prototype instanceof ObjectEventTarget)){
+    if (Entity.prototype.constructor !== Entity){
+
+      this.constructor = Entity;
+      var prototype = Entity.prototype;
+      this.getPrototype = function () {
+        return prototype;
+      };
 
       this.getAttribute = function (name){
         // Get a attribute by the name
@@ -162,12 +168,37 @@
         return result;
       };
 
+      this.parse = function (object){
+        // Parse a object into a entity, copying all the properties to the entity attributes
+
+        var prop;
+        // Remove attributes that isn't in the target object
+        for (prop in this.attributes){
+          if (!object.hasOwnProperty(prop)){
+            this.removeAttribute(prop);
+          }
+        }
+        // Set attributes that is in the target object
+        for (prop in object){
+          if (object.hasOwnProperty(prop)){
+            this.setAttribute(prop, object[prop]);
+          }
+        }
+      };
+
       // Return the prototype instance
       return this;
     }
 
+    if (Entity.prototype.getPrototype().constructor !== ObjectEventTarget){
+      Entity.prototype.getPrototype().constructor.apply(this, arguments);
+    }
+
     // Store the attributes
     this.attributes = new EntityAttributes();
+
+    // Will try to initiate the entity with the passed value
+    this.parse(json);
   }
   Entity.prototype = ObjectEventTarget.prototype;
   Entity.prototype = new Entity();
@@ -187,7 +218,7 @@
       return [prototype, props];
     };
 
-    // Chronometer.prototype remove enumerable prototype
+    // Remove enumerable prototype
     Object.defineProperties.apply(Object, definePropertiesArgs(Entity.prototype));
   }
 
