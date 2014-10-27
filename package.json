@@ -1,7 +1,7 @@
 {
   "name": "Entity",
   "description": "A Javascript entity with support a events and export toJSON very simple that can be extended using prototype chain.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "homepage": "https://github.com/gartz/Entity/",
   "author": {
     "name": "Gabriel Reitz Giannattasio <gabriel@gartz.com.br>",

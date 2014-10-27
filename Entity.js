@@ -186,6 +186,12 @@
         }
       };
 
+      this.clone = function (){
+        // Returns a clone made from the same constructor instance with the attributes in it
+
+        return new this.constructor(this.attributes);
+      };
+
       // Return the prototype instance
       return this;
     }

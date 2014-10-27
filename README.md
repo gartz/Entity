@@ -64,7 +64,12 @@ Methods
 * **setAttribute( name, value )**: Update the attribute value (if doesn't exist, it will be created)
 * **removeAttribute( name )**: Return true if the attribute was removed
 * **parse( object )**: Add all the properties in a object as attribute and remove the attributes in the model that isn't present in the object
+* **clone()**: Create a new instance with the same attributes of the actual, it will use the constructor method to do it.
 * **toJSON()**: Export the Entity to a object that can be stringfy by `JSON.stringfy` method.
+
+**Internal use methods:**
+
+* **constructor()**: Stores the function that was used to construct the object.
 * **getPrototype()**: Will expose the prototype instance, to allow super constructors.
 
 Properties
@@ -117,6 +122,10 @@ Example:
 function FancyEntity( name ){
     Entity.call(this);
     this.name = name;
+
+    // When you are customizing the prototype, the constructor will be overloaded by the prototype
+    // Make sure to expose it, to the `clone` method works
+    this.constructor = FancyEntity;
 }
 FancyEntity.prototype = Entity.prototype;
 ```
