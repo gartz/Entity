@@ -75,7 +75,11 @@ Methods
 Properties
 ----------
 
-** Read-only properties:
+** Read-write properties: **
+
+* **types**: this can be a literal object, where all the properties should be functions that will be used to parse the attribute value.
+
+** Read-only properties: **
 
 * **attributes**: this object represent the attributes, if you change the attribute here, it will not trigger the events
 
@@ -119,15 +123,23 @@ To prototype you can call from your new constructor passing your context.
 
 Example:
 ```Javascript
-function FancyEntity( name ){
-    Entity.call(this);
-    this.name = name;
-
+function TypedEntity(){
     // When you are customizing the prototype, the constructor will be overloaded by the prototype
     // Make sure to expose it, to the `clone` method works
-    this.constructor = FancyEntity;
+    this.constructor = TypedEntity;
+    Entity.apply(this, arguments);
 }
-FancyEntity.prototype = Entity.prototype;
+TypedEntity.prototype = Object.create(Entity.prototype);
+TypedEntity.prototype.types = {
+    id: function (value){
+        return value > 0 && value < Infinity && parseInt(value) || null;
+    },
+    name: String,
+    angle: Number,
+    parent: function (value){
+        return new TypedEntity(value);
+    }
+};
 ```
 
 Architecture

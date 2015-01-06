@@ -59,6 +59,11 @@
         name = '' + name;
         var oldValue = this.attributes[name];
 
+        // Cast the value type
+        if (this.types && typeof this.types[name] === 'function'){
+          value = this.types[name](value);
+        }
+
         if (oldValue === value){
           return;
         }
@@ -66,6 +71,7 @@
         // Dispatch the 'change' event
         var changeEvent = new EntityEvent('change', {
           cancelable: true,
+          canBubble: true,
           oldValue: oldValue,
           value: value,
           attribute: name
@@ -73,10 +79,30 @@
         if (!this.dispatchEvent(changeEvent)) {
           return;
         }
+
+        //TODO: Use a less verbose syntax to add/remove events bubbling
+        if (oldValue instanceof Entity){
+          // Remove bubbling events from oldValue Entity
+          value.removeEventListener('change', this.dispatchEvent);
+          value.removeEventListener('changed', this.dispatchEvent);
+          value.removeEventListener('remove', this.dispatchEvent);
+          value.removeEventListener('removed', this.dispatchEvent);
+        }
+
+        // Persist the attribute changing
         this.attributes['' + name] = value;
+
+        if (value instanceof Entity){
+          // Add bubbling events
+          value.addEventListener('change', this.dispatchEvent);
+          value.addEventListener('changed', this.dispatchEvent);
+          value.addEventListener('remove', this.dispatchEvent);
+          value.addEventListener('removed', this.dispatchEvent);
+        }
 
         // After change, dispatch the 'changed' event
         this.dispatchEvent(new EntityEvent('changed', {
+          canBubble: true,
           oldValue: oldValue,
           value: value,
           attribute: name
@@ -106,6 +132,7 @@
         // Dispatch the 'remove' event
         var changeEvent = new EntityEvent('remove', {
           cancelable: true,
+          canBubble: true,
           oldValue: oldValue,
           value: value,
           attribute: name
@@ -116,8 +143,17 @@
           return false;
         }
 
+        if (this.attributes[name] !== oldValue && oldValue instanceof Entity){
+          // Remove bubbling events from oldValue Entity
+          value.removeEventListener('change', this.dispatchEvent);
+          value.removeEventListener('changed', this.dispatchEvent);
+          value.removeEventListener('remove', this.dispatchEvent);
+          value.removeEventListener('removed', this.dispatchEvent);
+        }
+
         // After change, dispatch the 'removed' event
         this.dispatchEvent(new EntityEvent('removed', {
+          canBubble: true,
           oldValue: oldValue,
           value: value,
           attribute: name
@@ -170,6 +206,12 @@
 
       this.parse = function (object){
         // Parse a object into a entity, copying all the properties to the entity attributes
+        // Instances of the current constructor won't be parsed
+
+        // Check if the object is a instance of the current Entity
+        if (object instanceof this.constructor){
+          return object;
+        }
 
         var prop;
         // Remove attributes that isn't in the target object
